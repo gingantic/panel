@@ -128,6 +128,7 @@ class User extends Model implements
         'totp_authenticated_at',
         'gravatar',
         'root_admin',
+        'credits',
     ];
 
     /**
@@ -138,6 +139,7 @@ class User extends Model implements
         'use_totp' => 'boolean',
         'gravatar' => 'boolean',
         'totp_authenticated_at' => 'datetime',
+        'credits' => 'integer',
     ];
 
     /**
@@ -248,6 +250,66 @@ class User extends Model implements
     public function sshKeys(): HasMany
     {
         return $this->hasMany(UserSSHKey::class);
+    }
+
+    /**
+     * Returns all transactions for this user.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Returns all completed transactions for this user.
+     */
+    public function completedTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class)->completed();
+    }
+
+    /**
+     * Returns all pending transactions for this user.
+     */
+    public function pendingTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class)->pending();
+    }
+
+    /**
+     * Get the total credits from completed transactions.
+     */
+    public function getTotalCreditsFromTransactions(): int
+    {
+        return $this->completedTransactions()
+            ->selectRaw('COALESCE(SUM(CASE WHEN type = "credit" THEN amount ELSE -amount END), 0) as total')
+            ->value('total') ?? 0;
+    }
+
+    /**
+     * Check if user has sufficient credits.
+     */
+    public function hasCredits(int $amount): bool
+    {
+        return $this->credits >= $amount;
+    }
+
+    /**
+     * Add credits to the user account.
+     */
+    public function addCredits(int $amount): self
+    {
+        $this->increment('credits', $amount);
+        return $this->fresh();
+    }
+
+    /**
+     * Deduct credits from the user account.
+     */
+    public function deductCredits(int $amount): self
+    {
+        $this->decrement('credits', $amount);
+        return $this->fresh();
     }
 
     /**

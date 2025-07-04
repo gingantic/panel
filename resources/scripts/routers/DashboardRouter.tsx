@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar';
 import DashboardContainer from '@/components/dashboard/DashboardContainer';
+import CreateServerContainer from '@/components/dashboard/CreateServerContainer';
 import { NotFound } from '@/components/elements/ScreenBlock';
 import TransitionRouter from '@/TransitionRouter';
 import SubNavigation from '@/components/elements/SubNavigation';
@@ -33,6 +34,9 @@ export default () => {
                     <Switch location={location}>
                         <Route path={'/'} exact>
                             <DashboardContainer />
+                        </Route>
+                        <Route path={'/create-server'} exact>
+                            <CreateServerContainer />
                         </Route>
                         {routes.account.map(({ path, component: Component }) => (
                             <Route key={path} path={`/account/${path}`.replace('//', '/')} exact>

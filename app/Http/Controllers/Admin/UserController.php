@@ -21,6 +21,8 @@ use Pterodactyl\Services\Users\UserDeletionService;
 use Pterodactyl\Http\Requests\Admin\UserFormRequest;
 use Pterodactyl\Http\Requests\Admin\NewUserFormRequest;
 use Pterodactyl\Contracts\Repository\UserRepositoryInterface;
+use Pterodactyl\Services\Credits\CreditTransactionService;
+use Pterodactyl\Http\Requests\Admin\UserCreditFormRequest;
 
 class UserController extends Controller
 {
@@ -37,6 +39,7 @@ class UserController extends Controller
         protected UserUpdateService $updateService,
         protected UserRepositoryInterface $repository,
         protected ViewFactory $view,
+        protected CreditTransactionService $creditService,
     ) {
     }
 
@@ -149,5 +152,40 @@ class UserController extends Controller
 
             return $item;
         });
+    }
+
+    /**
+     * Adjust user credits (add or subtract) from admin panel.
+     */
+    public function adjustCredits(UserCreditFormRequest $request, User $user): RedirectResponse
+    {
+        $data = $request->normalize();
+        try {
+            if ($data['action'] === 'add') {
+                $this->creditService->addCredits(
+                    $user,
+                    $data['amount'],
+                    $data['description'] ?? 'Admin credit addition',
+                    'admin_adjustment',
+                    'ADMIN_' . $request->user()->id,
+                    ['admin_id' => $request->user()->id, 'admin_username' => $request->user()->username]
+                );
+                $this->alert->success('Credits added successfully.')->flash();
+            } else {
+                $this->creditService->deductCredits(
+                    $user,
+                    $data['amount'],
+                    $data['description'] ?? 'Admin credit deduction',
+                    'admin_adjustment',
+                    'ADMIN_' . $request->user()->id,
+                    ['admin_id' => $request->user()->id, 'admin_username' => $request->user()->username]
+                );
+                $this->alert->success('Credits deducted successfully.')->flash();
+            }
+        } catch (DisplayException $exception) {
+            $this->alert->danger($exception->getMessage())->flash();
+        }
+
+        return redirect()->route('admin.users.view', $user->id);
     }
 }

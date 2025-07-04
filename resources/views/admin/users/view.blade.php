@@ -102,6 +102,45 @@
             </div>
         </div>
     </form>
+    <div class="col-md-6">
+        <div class="box box-success">
+            <div class="box-header with-border">
+                <h3 class="box-title">Credits & Balance</h3>
+                <div class="box-tools pull-right">
+                    <span class="label label-primary">Current Balance: {{ number_format($user->credits) }} credits</span>
+                </div>
+            </div>
+            <form action="{{ route('admin.users.view.credits', $user->id) }}" method="POST">
+                <div class="box-body">
+                    {!! csrf_field() !!}
+                    <div class="form-group">
+                        <label class="control-label">Action</label>
+                        <div>
+                            <select name="action" class="form-control">
+                                <option value="add">Add Credits</option>
+                                <option value="subtract">Deduct Credits</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Amount</label>
+                        <div>
+                            <input type="number" name="amount" class="form-control" min="1" step="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Description</label>
+                        <div>
+                            <input type="text" name="description" class="form-control" maxlength="255" placeholder="Optional description">
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-success btn-sm pull-right">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="col-xs-12">
         <div class="box box-danger">
             <div class="box-header with-border">

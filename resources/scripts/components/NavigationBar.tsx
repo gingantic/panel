@@ -12,6 +12,7 @@ import http from '@/api/http';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import Avatar from '@/components/Avatar';
+import CreditBox from '@/components/elements/CreditBox';
 
 const RightNavigation = styled.div`
     & > a,
@@ -36,6 +37,7 @@ export default () => {
     const name = useStoreState((state: ApplicationStore) => state.settings.data!.name);
     const rootAdmin = useStoreState((state: ApplicationStore) => state.user.data!.rootAdmin);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const credits = useStoreState((state: ApplicationStore) => state.user.data!.credits);
 
     const onTriggerLogout = () => {
         setIsLoggingOut(true);
@@ -46,9 +48,10 @@ export default () => {
     };
 
     return (
-        <div className={'w-full bg-neutral-900 shadow-md overflow-x-auto'}>
+        <div className={'w-full bg-neutral-900 shadow-md overflow-x-auto'}>            
             <SpinnerOverlay visible={isLoggingOut} />
             <div className={'mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px]'}>
+                
                 <div id={'logo'} className={'flex-1'}>
                     <Link
                         to={'/'}
@@ -60,6 +63,7 @@ export default () => {
                     </Link>
                 </div>
                 <RightNavigation className={'flex h-full items-center justify-center'}>
+                    <CreditBox credits={credits}/>
                     <SearchContainer />
                     <Tooltip placement={'bottom'} content={'Dashboard'}>
                         <NavLink to={'/'} exact>

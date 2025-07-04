@@ -94,6 +94,7 @@ Route::group(['prefix' => 'users'], function () {
 
     Route::patch('/view/{user:id}', [Admin\UserController::class, 'update']);
     Route::delete('/view/{user:id}', [Admin\UserController::class, 'delete']);
+    Route::post('/view/{user:id}/credits', [Admin\UserController::class, 'adjustCredits'])->name('admin.users.view.credits');
 });
 
 /*
@@ -225,4 +226,22 @@ Route::group(['prefix' => 'nests'], function () {
     Route::delete('/view/{nest:id}', [Admin\Nests\NestController::class, 'destroy']);
     Route::delete('/egg/{egg:id}', [Admin\Nests\EggController::class, 'destroy']);
     Route::delete('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'destroy']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Product Controller Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/products
+|
+*/
+Route::group(['prefix' => 'products'], function () {
+    Route::get('/', [Admin\ProductController::class, 'index'])->name('admin.products');
+    Route::get('/new', [Admin\ProductController::class, 'create'])->name('admin.products.new');
+    Route::get('/view/{product:id}', [Admin\ProductController::class, 'view'])->name('admin.products.view');
+
+    Route::post('/', [Admin\ProductController::class, 'store']);
+    Route::patch('/view/{product:id}', [Admin\ProductController::class, 'update']);
+    Route::delete('/view/{product:id}', [Admin\ProductController::class, 'delete']);
 });

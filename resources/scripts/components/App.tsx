@@ -31,6 +31,7 @@ interface ExtendedWindow extends Window {
         language: string;
         updated_at: string;
         created_at: string;
+        credits: number;
         /* eslint-enable camelcase */
     };
 }
@@ -49,6 +50,7 @@ const App = () => {
             useTotp: PterodactylUser.use_totp,
             createdAt: new Date(PterodactylUser.created_at),
             updatedAt: new Date(PterodactylUser.updated_at),
+            credits: PterodactylUser.credits ?? 0,
         });
     }
 

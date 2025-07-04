@@ -12,10 +12,12 @@ import tw from 'twin.macro';
 import useSWR from 'swr';
 import { PaginatedResult } from '@/api/http';
 import Pagination from '@/components/elements/Pagination';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
+import Button from '@/components/elements/Button';
 
 export default () => {
     const { search } = useLocation();
+    const history = useHistory();
     const defaultPage = Number(new URLSearchParams(search).get('page') || '1');
 
     const [page, setPage] = useState(!isNaN(defaultPage) && defaultPage > 0 ? defaultPage : 1);
@@ -50,6 +52,18 @@ export default () => {
 
     return (
         <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'}>
+            <div css={tw`flex justify-between items-center mb-6`}>
+                <h1 css={tw`text-2xl text-neutral-50`}>Your Servers</h1>
+                <Button
+                    color={'green'}
+                    size={'large'}
+                    onClick={() => history.push('/create-server')}
+                    css={tw`shadow-lg`}
+                >
+                    Create Server
+                </Button>
+            </div>
+            
             {rootAdmin && (
                 <div css={tw`mb-2 flex justify-end items-center`}>
                     <p css={tw`uppercase text-xs text-neutral-400 mr-2`}>
@@ -72,11 +86,21 @@ export default () => {
                                 <ServerRow key={server.uuid} server={server} css={index > 0 ? tw`mt-2` : undefined} />
                             ))
                         ) : (
-                            <p css={tw`text-center text-sm text-neutral-400`}>
-                                {showOnlyAdmin
-                                    ? 'There are no other servers to display.'
-                                    : 'There are no servers associated with your account.'}
-                            </p>
+                            <div css={tw`text-center py-8`}>
+                                <p css={tw`text-sm text-neutral-400 mb-4`}>
+                                    {showOnlyAdmin
+                                        ? 'There are no other servers to display.'
+                                        : 'There are no servers associated with your account.'}
+                                </p>
+                                {!showOnlyAdmin && (
+                                    <Button
+                                        color={'primary'}
+                                        onClick={() => history.push('/create-server')}
+                                    >
+                                        Create Your First Server
+                                    </Button>
+                                )}
+                            </div>
                         )
                     }
                 </Pagination>

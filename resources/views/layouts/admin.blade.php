@@ -117,6 +117,11 @@
                                 <i class="fa fa-magic"></i> <span>Mounts</span>
                             </a>
                         </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.products') ?: 'active' }}">
+                            <a href="{{ route('admin.products') }}">
+                                <i class="fa fa-cubes"></i> <span>Products</span>
+                            </a>
+                        </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
                             <a href="{{ route('admin.nests') }}">
                                 <i class="fa fa-th-large"></i> <span>Nests</span>
