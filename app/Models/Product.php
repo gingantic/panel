@@ -41,6 +41,7 @@ class Product extends Model
         'disk',
         'swap',
         'credits',
+        'billing_cycle',
         'max_per_user',
         'disabled',
     ];
@@ -54,6 +55,7 @@ class Product extends Model
         'disk' => 'integer',
         'swap' => 'integer',
         'credits' => 'integer',
+        'billing_cycle' => 'string',
         'max_per_user' => 'integer',
         'disabled' => 'boolean',
     ];
@@ -69,6 +71,7 @@ class Product extends Model
         'disk' => 'required|integer|min:1',
         'swap' => 'required|integer',
         'credits' => 'required|integer|min:0',
+        'billing_cycle' => 'required|string|in:hourly,daily,weekly,monthly,yearly',
         'max_per_user' => 'required|integer|min:1',
         'disabled' => 'boolean',
     ];

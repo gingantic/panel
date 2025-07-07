@@ -20,6 +20,9 @@ Route::get('/', [Client\ClientController::class, 'index'])->name('api:client.ind
 Route::get('/permissions', [Client\ClientController::class, 'permissions']);
 Route::get('/products', [Client\ProductController::class, 'index'])->name('api:client.products');
 
+// Create server from product (purchase & provision)
+Route::post('/servers/new', Client\Servers\CreateProductServerController::class)->name('api:client.servers.store');
+
 Route::prefix('/account')->middleware(AccountSubject::class)->group(function () {
     Route::prefix('/')->withoutMiddleware(RequireTwoFactorAuthentication::class)->group(function () {
         Route::get('/', [Client\AccountController::class, 'index'])->name('api:client.account');

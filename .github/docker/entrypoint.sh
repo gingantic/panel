@@ -5,28 +5,31 @@ mkdir -p /var/log/panel/logs/ /var/log/supervisord/ /var/log/nginx/ /var/log/php
   && chmod 777 /var/log/panel/logs/ \
   && ln -s /app/storage/logs/ /var/log/panel/
 
+chown -R nginx:nginx storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
 ## check for .env file and generate app keys if missing
 if [ -f /app/var/.env ]; then
   echo "external vars exist."
+  cp .env /app/var/.env
   rm -rf /app/.env
   ln -s /app/var/.env /app/
 else
   echo "external vars don't exist."
   rm -rf /app/.env
   touch /app/var/.env
-
-  ## manually generate a key because key generate --force fails
-  if [ -z $APP_KEY ]; then
-     echo -e "Generating key."
-     APP_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-     echo -e "Generated app key: $APP_KEY"
-     echo -e "APP_KEY=$APP_KEY" > /app/var/.env
-  else
-    echo -e "APP_KEY exists in environment, using that."
-    echo -e "APP_KEY=$APP_KEY" > /app/var/.env
-  fi
-
   ln -s /app/var/.env /app/
+fi
+
+## manually generate a key because key generate --force fails
+if [ -z $APP_KEY ]; then
+    echo -e "Generating key."
+    APP_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+    echo -e "Generated app key: $APP_KEY"
+    echo -e "APP_KEY=$APP_KEY" > /app/var/.env
+else
+  echo -e "APP_KEY exists in environment, using that."
+  echo -e "APP_KEY=$APP_KEY" > /app/var/.env
 fi
 
 echo "Checking if https is required."
@@ -69,9 +72,23 @@ do
   sleep 1
 done
 
+# check if the file exists
+if [ -f /app/database/schema/mysql-schema.sql ]; then
+  echo "File exists, removing it."
+  rm -f /app/database/schema/mysql-schema.sql
+fi
+
 ## make sure the db is set up
 echo -e "Migrating and Seeding D.B"
 php artisan migrate --seed --force
+
+# check if debug is true
+if [ "$APP_DEBUG" = "true" ]; then
+  echo "Debug is true, add admin user."
+  php artisan p:user:make -n --email dev@local.com --username user --name-first Developer --name-last User --password user123 --admin 1
+  #mariadb -u root -h database -p"$DB_ROOT_PASSWORD" --ssl=0 -e "USE panel; UPDATE users SET root_admin = 1 WHERE username = 'user';"
+  echo "Admin user added."
+fi
 
 ## start cronjobs for the queue
 echo -e "Starting cron jobs."

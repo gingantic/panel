@@ -21,6 +21,7 @@ return new class extends Migration
             $table->unsignedInteger('disk'); // Disk in MB
             $table->integer('swap')->default(0); // Swap in MB (use -1 for unlimited like Pterodactyl convention)
             $table->unsignedInteger('credits'); // Cost in platform credits
+            $table->enum('billing_cycle', ['hourly','daily','weekly','monthly','yearly'])->default('monthly'); // Billing period
             $table->unsignedInteger('max_per_user')->default(1); // Max servers of this product a single user can own
             $table->boolean('disabled')->default(false); // Soft-disable product from being purchased/deployed
             $table->timestamps();

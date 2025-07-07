@@ -3,24 +3,18 @@ import http from '@/api/http';
 interface CreateServerData {
     name: string;
     description?: string;
-    memory: number;
-    cpu: number;
-    disk: number;
-    productId: number;
+    productId: number; // Backend expects product_id
+    eggId?: number | null; // Backend expects egg_id, optional
 }
 
 export default async (data: CreateServerData): Promise<any> => {
-    // For now, this is a placeholder that simulates server creation
-    // In a real implementation, this would call the appropriate backend API
-    return new Promise((resolve, reject) => {
-        // Simulate API call delay
-        setTimeout(() => {
-            // Mock successful response
-            resolve({
-                id: Math.random().toString(36).substr(2, 9),
-                status: 'creating',
-                ...data,
-            });
-        }, 1000);
-    });
+    const payload = {
+        name: data.name,
+        description: data.description,
+        product_id: data.productId,
+        egg_id: data.eggId ?? undefined,
+    };
+
+    const response = await http.post('/api/client/servers/new', payload);
+    return response.data;
 }; 

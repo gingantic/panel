@@ -14,19 +14,20 @@ import Spinner from '@/components/elements/Spinner';
 import useFlash from '@/plugins/useFlash';
 import createServer from '@/api/createServer';
 import getProducts, { Product } from '@/api/getProducts';
+import { httpErrorToHuman } from '@/api/http';
 
 // Helper function to format credits as price
 const formatPrice = (credits: number): string => {
     if (credits === 0) return 'Free';
     // Convert credits to dollar amount (assuming 100 credits = $1, adjust as needed)
-    const dollars = credits / 100;
-    return `$${dollars.toFixed(2)}/month`;
+    return credits.toString();
 };
 
 interface FormValues {
     name: string;
     description: string;
     productId: number | null;
+    eggId: number | null;
 }
 
 const CreateServerContainer = () => {
@@ -66,6 +67,8 @@ const CreateServerContainer = () => {
             .nullable()
             .oneOf(products.map(p => p.id), 'Please select a valid plan')
             .required('Please select a server plan'),
+        eggId: Yup.number()
+            .nullable(),
     });
 
     const onSubmit = async (values: FormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
@@ -80,10 +83,8 @@ const CreateServerContainer = () => {
             const serverData = {
                 name: values.name,
                 description: values.description,
-                memory: product.memory,
-                cpu: product.cpu,
-                disk: product.disk,
                 productId: product.id,
+                eggId: values.eggId,
             };
 
             await createServer(serverData);
@@ -91,7 +92,7 @@ const CreateServerContainer = () => {
             history.push('/');
         } catch (error: any) {
             console.error('Failed to create server:', error);
-            addError({ key: 'create-server', message: error.message || 'Failed to create server. Please try again.' });
+            addError({ key: 'create-server', message: httpErrorToHuman(error) || 'Failed to create server. Please try again.' });
         } finally {
             setSubmitting(false);
         }
@@ -125,6 +126,7 @@ const CreateServerContainer = () => {
                             name: '',
                             description: '',
                             productId: null,
+                            eggId: null,
                         }}
                         validationSchema={validationSchema}
                         onSubmit={onSubmit}
@@ -243,12 +245,38 @@ const CreateServerContainer = () => {
                                                     </div>
                                                 </div>
                                             )}
+
+                                            {selectedProduct && selectedProduct.eggs.length > 0 && (
+                                                <div>
+                                                    <Label htmlFor={'eggId'}>Egg</Label>
+                                                    <Field
+                                                        as="select"
+                                                        name={'eggId'}
+                                                        id={'eggId'}
+                                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                                            setFieldValue('eggId', e.target.value ? parseInt(e.target.value) : null);
+                                                        }}
+                                                        css={tw`w-full p-3 border-2 rounded bg-neutral-600 border-neutral-500 text-neutral-200`}
+                                                    >
+                                                        <option value="">Select an egg</option>
+                                                        {selectedProduct.eggs.map((egg) => (
+                                                            <option key={egg.id} value={egg.id}>{egg.name}</option>
+                                                        ))}
+                                                    </Field>
+                                                    <InputError errors={errors} touched={touched} name="eggId" />
+                                                </div>
+                                            )}
                                         </div>
                                     </TitledGreyBox>
 
                                     <Button
                                         type={'submit'}
-                                        disabled={!values.productId || !values.name || isSubmitting}
+                                        disabled={
+                                            !values.productId ||
+                                            !values.name ||
+                                            isSubmitting ||
+                                            (selectedProduct && selectedProduct.eggs.length > 0 && !values.eggId)
+                                        }
                                         isLoading={isSubmitting}
                                         color={'green'}
                                         size={'xlarge'}

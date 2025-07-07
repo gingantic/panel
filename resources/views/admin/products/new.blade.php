@@ -53,6 +53,16 @@
                                 <input type="number" name="credits" class="form-control" min="0" />
                             </div>
                             <div class="col-md-4">
+                                <label>Billing Cycle</label>
+                                <select name="billing_cycle" class="form-control">
+                                    <option value="hourly">Hourly</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly" selected>Monthly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
                                 <label>Max per User</label>
                                 <input type="number" name="max_per_user" class="form-control" min="1" />
                             </div>

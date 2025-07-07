@@ -48,6 +48,16 @@
                         <div class="row" style="margin-top:10px;">
                             <div class="col-md-4"><label>Swap (MB)</label><input type="number" name="swap" class="form-control" value="{{ $product->swap }}" /></div>
                             <div class="col-md-4"><label>Credits</label><input type="number" name="credits" class="form-control" value="{{ $product->credits }}" /></div>
+                            <div class="col-md-4">
+                                <label>Billing Cycle</label>
+                                <select name="billing_cycle" class="form-control">
+                                    <option value="hourly" {{ $product->billing_cycle === 'hourly' ? 'selected' : '' }}>Hourly</option>
+                                    <option value="daily" {{ $product->billing_cycle === 'daily' ? 'selected' : '' }}>Daily</option>
+                                    <option value="weekly" {{ $product->billing_cycle === 'weekly' ? 'selected' : '' }}>Weekly</option>
+                                    <option value="monthly" {{ $product->billing_cycle === 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                    <option value="yearly" {{ $product->billing_cycle === 'yearly' ? 'selected' : '' }}>Yearly</option>
+                                </select>
+                            </div>
                             <div class="col-md-4"><label>Max per User</label><input type="number" name="max_per_user" class="form-control" value="{{ $product->max_per_user }}" /></div>
                         </div>
 
