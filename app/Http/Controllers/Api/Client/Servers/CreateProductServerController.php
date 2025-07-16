@@ -120,6 +120,16 @@ class CreateProductServerController extends ClientApiController
         $server = $this->creationService->handle($data);
 
         // Record purchase
+        $cycle = $product->billing_cycle;
+        $nextRenew = match ($cycle) {
+            'hourly' => Carbon::now()->addHour(),
+            'daily' => Carbon::now()->addDay(),
+            'weekly' => Carbon::now()->addWeek(),
+            'monthly' => Carbon::now()->addMonth(),
+            'yearly' => Carbon::now()->addYear(),
+            default => Carbon::now()->addMonth(),
+        };
+
         UserProductPurchase::create([
             'user_id' => $user->id,
             'product_id' => $product->id,
@@ -127,8 +137,9 @@ class CreateProductServerController extends ClientApiController
             'server_id' => $server->id,
             'credits_charged' => $product->credits,
             'billing_cycle' => $product->billing_cycle,
-            'next_renew_at' => Carbon::now()->addMonth(), // simple: monthly, other cycles TODO
-            'status' => 'creating',
+            'next_renew_at' => $nextRenew,
+            'uptime_seconds' => 0,
+            'status' => 'active',
         ]);
 
         // Debit credits if cost greater than zero

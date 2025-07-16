@@ -140,6 +140,7 @@ class User extends Model implements
         'gravatar' => 'boolean',
         'totp_authenticated_at' => 'datetime',
         'credits' => 'integer',
+        'grace_deadline' => 'datetime',
     ];
 
     /**

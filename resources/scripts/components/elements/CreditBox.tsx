@@ -3,10 +3,12 @@
 import { faCoins } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const CreditBox = ({ credits }: { credits: number }) => {
     return (
-        <div
+        <Link
+            to={'/account/credits'}
             className="credit-box navigation-link"
             style={{
                 display: 'flex',
@@ -19,7 +21,7 @@ const CreditBox = ({ credits }: { credits: number }) => {
         >
             <FontAwesomeIcon icon={faCoins} />
             <span>{credits}</span>
-        </div>
+        </Link>
     );
 };
 

@@ -65,6 +65,11 @@ export default {
             name: 'Activity',
             component: ActivityLogContainer,
         },
+        {
+            path: '/credits',
+            name: 'Credits',
+            component: React.lazy(() => import('@/components/dashboard/credits/AccountCreditsContainer')),
+        },
     ],
     server: [
         {

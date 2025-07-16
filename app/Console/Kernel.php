@@ -47,6 +47,9 @@ class Kernel extends ConsoleKernel
         if (config('pterodactyl.telemetry.enabled')) {
             $this->registerTelemetry($schedule);
         }
+
+        // Schedule the billing renewal job every minute for accurate minute-level tracking.
+        $schedule->job(new \Pterodactyl\Jobs\Billing\ProcessProductRenewalsJob())->everyMinute()->withoutOverlapping();
     }
 
     /**

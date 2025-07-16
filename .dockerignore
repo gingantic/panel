@@ -1,0 +1,5 @@
+# Ignore runtime data mounts
+
+data/
+vendor/
+node_modules/
